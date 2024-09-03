@@ -93,10 +93,14 @@ class AmazonScraper:
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--no-sandbox")
         options.add_argument("--log-level=3")
-        self.driver = webdriver.Chrome(options=options)
+
+        # Locate chromedriver and set the correct permissions
+        chrome_driver_path = "/opt/render/.cache/selenium/chromedriver/linux64/128.0.6613.119/chromedriver"
+        os.chmod(chrome_driver_path, 0o755)  # Set executable permissions
+
+        self.driver = webdriver.Chrome(executable_path=chrome_driver_path, options=options)
         self.driver.set_window_size(1224, 650)
         self.driver.implicitly_wait(self.config.implicit_time)
-
     def get_to_website(self, productName: str):
         self.driver.get(self.baseUrl + "s?k=" + '+'.join(productName.split(' ')))
     
