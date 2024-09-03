@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.remote.webelement import WebElement
+from webdriver_manager.chrome import ChromeDriverManager
 import os
 # Configuration class
 class Config:
@@ -82,7 +83,7 @@ class AmazonScraper:
         self.baseUrl = "https://www.amazon.in/"
         self.config = Config()
         
-        options = webdriver.ChromeOptions()
+        options = Options()
         options.add_argument("--headless")
         options.add_argument("--disable-gpu")
         options.add_argument("--disable-extensions")
@@ -94,11 +95,9 @@ class AmazonScraper:
         options.add_argument("--no-sandbox")
         options.add_argument("--log-level=3")
 
-        # Locate chromedriver and set the correct permissions
-        chrome_driver_path = "/opt/render/.cache/selenium/chromedriver/linux64/128.0.6613.119/chromedriver"
-        os.chmod(chrome_driver_path, 0o755)  # Set executable permissions
-
-        self.driver = webdriver.Chrome(executable_path=chrome_driver_path, options=options)
+        # Use webdriver_manager to get the ChromeDriver
+        service = Service(ChromeDriverManager().install())
+        self.driver = webdriver.Chrome(service=service, options=options)
         self.driver.set_window_size(1224, 650)
         self.driver.implicitly_wait(self.config.implicit_time)
     def get_to_website(self, productName: str):
